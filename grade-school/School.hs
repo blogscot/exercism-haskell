@@ -17,8 +17,15 @@ mySchool :: Int -> String -> School
 mySchool d name = M.singleton d (S.singleton name)
 
 add :: Int -> String -> School -> School
-add grade name school = M.singleton grade (S.insert name names)
-  where names = snd . head $ M.toList school
+add grade name school
+  | school == School.empty = mySchool grade name
+  | otherwise = M.insert grade (S.insert name names) school
+  where names = if grade == grade'
+                then snd . head $ M.toList school
+                else S.empty
+        grade' = fst .head $ M.toList school
+
+
 
 grade :: Int -> School -> [String]
 grade d school = [""]
@@ -30,7 +37,8 @@ sorted school = school
 main = do
     print $ mySchool 2 "Aimee"
     print $ add 2 "Aimee" School.empty
-    print $ add 2 "Aimee" $ mySchool 2 "Bradley"
+    print $ add 2 "Aimee" $ mySchool 2 "Blair"
+    print $ mySchool 3 "Bradley"
     print $ add 2 "Aimee" $ mySchool 3 "Bradley"
 
 
