@@ -1,40 +1,26 @@
-module School (School(), add, School.empty, grade, sorted) where
+module School (School, add, School.empty, grade, sorted) where
 
 import Data.Map.Strict as M
-import Data.Set as S
+import Data.List
 
 type Grade = Int
 type Student = String
-type School = Map Grade (Set Student)
+type School = Map Grade [Student]
 
 empty :: School
-empty = M.singleton 0 S.empty
+empty = M.empty
 
-set1 :: S.Set Student
-set1 = S.singleton "Aimee"
+mySchool :: Grade -> Student -> School
+mySchool g name = M.singleton g [name]
 
-mySchool :: Int -> String -> School
-mySchool d name = M.singleton d (S.singleton name)
+add :: Grade -> Student -> School -> School
+add g name = M.insertWith (++) g [name]
 
-add :: Int -> String -> School -> School
-add grade name school
-  | school == School.empty = mySchool grade name
-  | otherwise = M.insert grade (S.insert name names) school
-  where names = if grade == grade'
-                then snd . head $ M.toList school
-                else S.empty
-        grade' = fst .head $ M.toList school
+grade :: Grade -> School -> [Student]
+grade = M.findWithDefault []
 
-
-
-grade :: Int -> School -> [String]
-grade g school = case M.lookup g school of
-                  Just x -> S.toList x
-                  _ -> [""]
-
-
-sorted :: School -> School
-sorted school = school
+sorted :: School -> [(Grade, [Student])]
+sorted school = [(grade', sort names) | (grade', names) <- M.toList school]
 
 school1 :: School
 school1 = add 2 "Andy" $ add 7 "Logan" $ add 2 "Blair" $ add 2 "Aimee" $ mySchool 3 "Bradley"
@@ -49,5 +35,4 @@ main = do
     print $ grade 3 school1
     print $ grade 4 school1
     print $ sorted school1
-
-
+    print $ toList school1
