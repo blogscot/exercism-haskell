@@ -1,7 +1,7 @@
 module DNA (count, nucleotideCounts) where
 
 import Data.Map.Strict (Map, fromList)
---
+
 dna :: String
 dna = "ACGT"
 
