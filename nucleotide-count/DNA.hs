@@ -1,6 +1,6 @@
 module DNA (count, nucleotideCounts) where
 
-import Data.Map.Strict (Map, fromList)
+import Data.Map.Strict (Map, fromList, fromListWith, insertWith, toList)
 
 dna :: String
 dna = "ACGT"
@@ -14,5 +14,10 @@ count :: Char -> String -> Int
 count c str = length $ filter matches $ map validate str
   where matches x = x == validate c
 
+empty :: Map Char Int
+empty = fromList $ dna `zip` repeat 0
+
 nucleotideCounts :: String -> Map Char Int
-nucleotideCounts str = fromList [(c, count c str) | c <- dna]
+nucleotideCounts [] = empty
+nucleotideCounts str = fromListWith (+) $ concatMap insert str
+  where insert c = toList $ insertWith (+) (validate c) 1 empty
