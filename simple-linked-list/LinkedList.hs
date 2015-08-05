@@ -1,6 +1,12 @@
 module LinkedList where
 
+import qualified Data.Foldable as F
+
 data LinkedList a = Node a (LinkedList a) | Nil deriving (Show, Eq, Ord)
+
+instance F.Foldable LinkedList where
+  foldr _ acc Nil = acc
+  foldr f acc (Node k linked) = f k (F.foldr f acc linked)
 
 nil :: LinkedList a
 nil = Nil
@@ -12,7 +18,7 @@ isNil linked = case linked of
 
 toList :: LinkedList a -> [a]
 toList linked = case linked of
-                  Node x next -> x : toList next
+                  Node x next' -> x : toList next'
                   _ -> []
 
 fromList :: [a] -> LinkedList a
@@ -25,22 +31,15 @@ datum linked = case linked of
 
 next :: LinkedList a -> LinkedList a
 next linked = case linked of
-               Node _ next -> next
+               Node _ next' -> next'
                _ -> error "Unexpected end of list."
 
 reverseLinkedList :: LinkedList a -> LinkedList a
-reverseLinkedList linked = fromList . reverse $ toList linked
+reverseLinkedList = F.foldl (flip new) Nil
 
 new :: a -> LinkedList a -> LinkedList a
 new = Node
 
-one = new (1 :: Int) nil
-two = new (2 :: Int) one
-three = new (3 :: Int) two
+main =
+  print $ F.foldr (+) 0 $ fromList [2..10]
 
-main = do
-  print three
-  print $ datum three
-  print $ next three
-  print $ toList three
-  print $ fromList [1..5]
