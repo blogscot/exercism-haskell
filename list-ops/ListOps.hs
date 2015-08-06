@@ -24,27 +24,21 @@ foldr f acc = fun
         fun (x:xs) = x `f` fun xs
 
 length :: [a] -> Int
-length [] = 0
-length (x:xs) = 1 + length xs
+length = foldr (\_ y -> y+1) 0
 
 reverse :: [a] -> [a]
-reverse [] = []
-reverse (x:xs) = reverse xs ++ [x]
+reverse = foldr (\x y -> y ++ [x]) []
 
 map :: (a -> b) -> [a] -> [b]
 map _ [] = []
 map f (x:xs) = f x : map f xs
 
 filter :: (a -> Bool) -> [a] -> [a]
-filter _ [] = []
-filter p (x:xs)
-  | p x = x : filter p xs
-  | otherwise = filter p xs
+filter p = foldr (\x y -> if p x then x:y else y) []
 
 (++) :: [a] -> [a] -> [a]
-(++) [] ys = ys
-(x:xs) ++ ys = x : xs ++ ys
+xs ++ ys = foldr (:) ys xs
 
 concat :: [[a]] -> [a]
 concat [] = []
-concat (x:xs) = x ++ concat xs
+concat xs = foldr (++) [] xs
