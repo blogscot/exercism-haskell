@@ -23,5 +23,4 @@ howManyBottles n s
   | otherwise = error "Negative number of bottles!"
 
 sing :: Int -> Int -> String
-sing start end = concatMap verse' [start, pred start..end]
-  where verse' x = verse x ++ "\n"
+sing start end = unlines $ map verse [start, pred start..end]
