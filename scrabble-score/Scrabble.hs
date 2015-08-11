@@ -1,17 +1,15 @@
 module Scrabble (scoreLetter, scoreWord) where
 
 import Data.Map.Strict as M hiding (foldr, map)
+import Data.Maybe
 import Data.Char
 
 scoreLetter :: Char -> Int
 scoreLetter c = value
-  where value' = M.lookup [toUpper c] $ fromList scrabble
-        value = case value' of
-          Just x -> x
-          _ -> 0
+  where value = fromMaybe 0 $ M.lookup [toUpper c] $ fromList scrabble
 
 scoreWord :: String -> Int
-scoreWord word = sum $ map scoreLetter word
+scoreWord = sum . map scoreLetter
 
 scrabble :: [(String, Int)]
 scrabble =
