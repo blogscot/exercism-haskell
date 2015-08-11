@@ -1,6 +1,6 @@
 module Triangle (TriangleType(..), triangleType) where
 
-import Control.Applicative
+import Data.List
 
 data TriangleType = Scalene | Isosceles | Equilateral | Illogical
   deriving (Show, Eq)
@@ -13,5 +13,6 @@ triangleType a b c
   | otherwise = Scalene
 
 illogical :: Int -> Int -> Int -> Bool
-illogical a b c = or $ (\x y z -> x + y <= z) <$> t <*> t <*> t
-  where t = [a,b,c]
+illogical a b c = badTriangle
+  where badTriangle = x <= 0 || x + y <= z
+        [x, y, z] = sort [a,b,c]
