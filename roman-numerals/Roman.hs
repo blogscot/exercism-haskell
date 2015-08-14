@@ -40,7 +40,8 @@ pad s = concat (replicate (4 - length s) "0") ++ s
 
 numerals :: Int -> String
 numerals num = f . pad $ show num
-  where f (w:x:y:z) = parseThousands (read [w]) ++
+  where f :: String -> String
+        f (w:x:y:z) = parseThousands (read [w]) ++
                       parseHundreds (read [x]) ++
                       parseTens (read [y]) ++
                       parseOnes (read z)
