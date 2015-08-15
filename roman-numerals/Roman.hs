@@ -45,3 +45,4 @@ numerals num = f . pad $ show num
                       parseHundreds (read [x]) ++
                       parseTens (read [y]) ++
                       parseOnes (read z)
+        f _ = []
