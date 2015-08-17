@@ -1,19 +1,17 @@
 module PrimeFactors (primeFactors) where
 
 isFactor :: Int -> Int -> Bool
-isFactor num target
-  | target `mod` num == 0 = True
-  | otherwise = False
+isFactor num target = target `mod` num == 0
 
 factorize :: Int -> [Int]
 factorize num
   | num == 1 = []
-  | num < 4 = [num]
 factorize num = factor 2
   where factor divisor
-          | divisor == num = [num]
           | divisor `isFactor` num = [divisor, num `div` divisor]
+          | divisor == max' = [num]
           | otherwise = factor $ divisor + 1
+        max' = ceiling (sqrt $ fromIntegral num :: Double)
 
 primeFactors :: Int -> [Int]
 primeFactors num = case factorize num of
