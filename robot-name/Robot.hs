@@ -1,15 +1,15 @@
 module Robot (robotName, mkRobot, resetName) where
 
-import System.Random
-import Control.Concurrent
+import System.Random (newStdGen, randomRs)
+import Control.Concurrent (MVar, newMVar, readMVar, swapMVar)
+import Control.Monad (void)
 
 mkRobot :: IO (MVar String)
 mkRobot = generateName >>= newMVar
 
 resetName :: MVar String -> IO ()
-resetName s = do
-  _ <- swapMVar s =<< generateName
-  return ()
+resetName s =
+  void . swapMVar s =<< generateName
 
 robotName :: MVar String -> IO String
 robotName = readMVar
