@@ -4,15 +4,17 @@ import System.Random (newStdGen, randomRs)
 import Control.Concurrent (MVar, newMVar, readMVar, swapMVar)
 import Control.Monad (void)
 
-mkRobot :: IO (MVar String)
-mkRobot = generateName >>= newMVar
+data Robot = Robot {getName :: MVar String}
 
-resetName :: MVar String -> IO ()
+mkRobot :: IO Robot
+mkRobot = generateName >>= newMVar >>= return . Robot
+
+resetName :: Robot -> IO ()
 resetName s =
-  void . swapMVar s =<< generateName
+  void . swapMVar (getName s) =<< generateName
 
-robotName :: MVar String -> IO String
-robotName = readMVar
+robotName :: Robot -> IO String
+robotName = readMVar . getName
 
 generate :: Int -> (Char, Char) -> IO String
 generate n (low, high) = do
