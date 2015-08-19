@@ -2,12 +2,12 @@ module Robot (robotName, mkRobot, resetName) where
 
 import System.Random (newStdGen, randomRs)
 import Control.Concurrent (MVar, newMVar, readMVar, swapMVar)
-import Control.Monad (void)
+import Control.Monad (liftM, void)
 
 data Robot = Robot {getName :: MVar String}
 
 mkRobot :: IO Robot
-mkRobot = generateName >>= newMVar >>= return . Robot
+mkRobot = liftM Robot (generateName >>= newMVar)
 
 resetName :: Robot -> IO ()
 resetName s =
