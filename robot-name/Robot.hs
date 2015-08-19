@@ -1,28 +1,22 @@
 module Robot (robotName, mkRobot, resetName) where
 
-import System.Random (newStdGen, randomRs)
+import System.Random (randomRIO)
 import Control.Concurrent (MVar, newMVar, readMVar, swapMVar)
 import Control.Monad (liftM, void)
 
-data Robot = Robot {getName :: MVar String}
+newtype Robot = Robot {getName :: MVar String}
 
 mkRobot :: IO Robot
-mkRobot = liftM Robot (generateName >>= newMVar)
+mkRobot = liftM Robot $ generateName >>= newMVar
 
 resetName :: Robot -> IO ()
-resetName s =
-  void . swapMVar (getName s) =<< generateName
+resetName s = generateName >>= void . swapMVar (getName s)
 
 robotName :: Robot -> IO String
 robotName = readMVar . getName
 
-generate :: Int -> (Char, Char) -> IO String
-generate n (low, high) = do
-  g <- newStdGen
-  return $ take n $ randomRs(low, high) g
-
 generateName :: IO String
-generateName = do
-  start <- generate 2 ('A', 'Z')
-  end <- generate 3 ('0', '9')
-  return $ start ++ end
+generateName = mapM randomRIO pattern
+  where pattern = [ letter, letter, digit, digit, digit ]
+        letter = ('A', 'Z')
+        digit = ('0', '9')
