@@ -5,32 +5,25 @@ module BankAccount ( BankAccount
                    , incrementBalance) where
 
 import Control.Concurrent.STM
+import Control.Monad
 
-type Account = Int
 type Balance = Integer
-data BankAccount = BankAccount Account (TVar (Maybe Balance))
+data BankAccount = BankAccount (TVar (Maybe Balance))
 
 openAccount :: IO BankAccount
 openAccount = do
-  bal <- atomically $ newTVar (Just 0)
-  return $ BankAccount 100 bal
+  bal <- atomically . newTVar $ Just 0
+  return $ BankAccount bal
 
 closeAccount :: BankAccount -> IO ()
-closeAccount (BankAccount _ bal) = atomically $ writeTVar bal Nothing
+closeAccount (BankAccount bal) = atomically $ writeTVar bal Nothing
 
 getBalance :: BankAccount -> IO (Maybe Integer)
-getBalance (BankAccount _ bal) = atomically $ readTVar bal
+getBalance (BankAccount bal) = atomically $ readTVar bal
 
 incrementBalance :: BankAccount -> Integer -> IO (Maybe Integer)
-incrementBalance (BankAccount _ bal) amount = do
+incrementBalance (BankAccount bal) amount = do
   current <- atomically $ readTVar bal
-  let newBalance = fmap (+amount) current
+  let newBalance = liftM (+amount) current
   atomically $ writeTVar bal newBalance
   return newBalance
-
--- main = do
---   acc <- openAccount
---   getBalance acc >>= print
---   bal <- incrementBalance acc 56
---   print bal
---   getBalance acc >>= print
