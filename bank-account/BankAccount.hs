@@ -8,29 +8,29 @@ import Control.Concurrent.STM
 
 type Account = Int
 type Balance = Integer
-data BankAccount = BankAccount Account (TVar Balance)
+data BankAccount = BankAccount Account (TVar (Maybe Balance))
 
 openAccount :: IO BankAccount
 openAccount = do
-  bal <- atomically $ newTVar 0
+  bal <- atomically $ newTVar (Just 0)
   return $ BankAccount 100 bal
 
 closeAccount :: BankAccount -> IO ()
-closeAccount acc = return ()
+closeAccount (BankAccount _ bal) = atomically $ writeTVar bal Nothing
 
 getBalance :: BankAccount -> IO (Maybe Integer)
-getBalance (BankAccount acc bal) = atomically $ readTVar bal >>= return . Just
+getBalance (BankAccount _ bal) = atomically $ readTVar bal
 
 incrementBalance :: BankAccount -> Integer -> IO (Maybe Integer)
-incrementBalance (BankAccount acc bal) amount = do
+incrementBalance (BankAccount _ bal) amount = do
   current <- atomically $ readTVar bal
-  let newBalance = current + amount
+  let newBalance = fmap (+amount) current
   atomically $ writeTVar bal newBalance
-  return $ Just newBalance
+  return newBalance
 
-main = do
-  acc <- openAccount
-  getBalance acc >>= print
-  bal <- incrementBalance acc 56
-  print bal
-  getBalance acc >>= print
+-- main = do
+--   acc <- openAccount
+--   getBalance acc >>= print
+--   bal <- incrementBalance acc 56
+--   print bal
+--   getBalance acc >>= print
