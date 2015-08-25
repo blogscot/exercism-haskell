@@ -4,8 +4,8 @@ module CryptoSquare (normalizePlaintext
                      , ciphertext
                      , normalizeCiphertext) where
 
-import Data.Char
-import Data.List
+import Data.Char (isDigit, isAlpha, toLower)
+import Data.List (transpose)
 
 normalizePlaintext :: String -> String
 normalizePlaintext = map toLower . filter (\c -> isDigit c || isAlpha c)
@@ -19,9 +19,7 @@ plaintextSegments str = words $ split len str'
         len = squareSize str'
 
 ciphertext :: String -> String
-ciphertext str = [c | z <- [0..pred v], (c, pos) <- zip str' [0..(length str')], pos `mod` v == z]
-  where str' = normalizePlaintext str
-        v = squareSize str'
+ciphertext = concat . transpose . plaintextSegments
 
 normalizeCiphertext :: String -> String
 normalizeCiphertext = unwords . transpose . plaintextSegments
