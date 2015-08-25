@@ -11,7 +11,7 @@ normalizePlaintext :: String -> String
 normalizePlaintext = map toLower . filter (\c -> isDigit c || isAlpha c)
 
 squareSize :: String -> Int
-squareSize s = ceiling (sqrt $ fromIntegral $ length s :: Double)
+squareSize = ceiling . (sqrt :: Double -> Double) . fromIntegral . length
 
 plaintextSegments :: String -> [String]
 plaintextSegments str = words $ split len str'
